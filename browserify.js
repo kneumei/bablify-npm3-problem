@@ -1,16 +1,15 @@
 var browserify = require('browserify');
-    var fs = require('fs');
-    
-    var appFiles = ['./src/entry.js', './src/dep.js'];
-    
-    var bundledFile = fs.createWriteStream('app.js');
-    
-    var js =
-    	browserify(
-            appFiles,
-    		{
-    			transform: [['babelify', { presets: ["es2015"] }]]
-    		}
-        )
-    	.bundle();
-    js.pipe(bundledFile);
+var babelify = require('babelify');
+var fs = require('fs');
+var row_flow = require('browserify-row-flow');
+
+var bundledFile = fs.createWriteStream('app.js');
+
+var b = browserify()
+    b.add('./src/entry.js')
+    b.add( './src/dep.js');
+    b.transform(babelify, { presets: ["es2015"]})
+    b.plugin(row_flow().plugin());
+
+var js = b.bundle();
+js.pipe(bundledFile);
